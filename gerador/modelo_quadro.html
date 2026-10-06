@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadro · /*TITULO*/ — INTERNO</title>
+<style>
+:root{--azul:#1F4E57;--bege:#D1C2A3;--fundo:#f6f4ef;--tx:#23302f;--mut:#6b7775;--linha:#e3ded2;--ok:#2e7d4f;--falta:#b4452c;--alerta:#b07a12}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--tx);font-size:14px}
+header{background:var(--azul);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img.logo{height:36px;background:#fff;border-radius:6px;padding:4px}
+header img.prod{height:56px;background:#fff;border-radius:6px}
+header h1{font-size:1.1rem;font-weight:600;margin:0}
+header .sub{font-size:.8rem;opacity:.85}
+header a{color:#fff;opacity:.85;font-size:.8rem;margin-left:auto}
+.resumo{display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;background:#fff;border-bottom:1px solid var(--linha);align-items:center}
+.kpi{border:1px solid var(--linha);border-radius:10px;padding:6px 12px;font-size:.85rem}
+.kpi b{font-size:1.05rem;display:block}
+.kpi.ok b{color:var(--ok)} .kpi.falta b{color:var(--falta)} .kpi.alerta b{color:var(--alerta)}
+.filtro{display:inline-flex;border:1px solid var(--azul);border-radius:8px;overflow:hidden;margin-left:auto}
+.filtro button{border:0;background:#fff;color:var(--azul);padding:6px 11px;cursor:pointer;font:inherit;font-size:.84rem}
+.filtro button.on{background:var(--azul);color:#fff}
+main{padding:12px 16px 40px;overflow-x:auto}
+h2.fam{font-size:.95rem;color:var(--azul);margin:16px 0 6px;border-bottom:2px solid var(--bege);padding-bottom:3px}
+table{border-collapse:separate;border-spacing:4px}
+th{font-weight:600;font-size:.78rem;color:var(--mut);text-align:center;vertical-align:bottom;padding:2px}
+th img{width:48px;height:48px;object-fit:cover;border-radius:6px;display:block;margin:0 auto 2px;border:1px solid var(--linha)}
+td.tec{text-align:center;font-size:.78rem;color:var(--tx);width:70px}
+td.tec img{width:56px;height:56px;object-fit:cover;border-radius:6px;display:block;margin:0 auto 2px;border:1px solid var(--linha)}
+td.cel{width:118px;height:132px;background:#fff;border-radius:8px;border:1px solid var(--linha);vertical-align:top;padding:3px;position:relative}
+td.cel img{width:110px;height:110px;object-fit:contain;display:block;cursor:zoom-in;background:#fff}
+td.cel.falta{background:repeating-linear-gradient(45deg,#f1ede4,#f1ede4 8px,#e9e4d8 8px,#e9e4d8 16px)}
+td.cel .sku{font-size:.66rem;color:var(--mut);font-family:ui-monospace,Consolas,monospace;display:flex;justify-content:space-between;padding:0 2px}
+td.cel .s{font-weight:700}
+td.cel .s.ok{color:var(--ok)} td.cel .s.falta{color:var(--falta)} td.cel .s.alerta{color:var(--alerta)}
+td.cel .dt{position:absolute;left:5px;top:5px;font-size:.6rem;background:rgba(255,255,255,.85);border-radius:4px;padding:0 4px;color:var(--mut)}
+tr.oculta{display:none}
+#lb{position:fixed;inset:0;background:rgba(20,30,32,.92);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px}
+#lb.on{display:flex} #lb img{max-width:96vw;max-height:84vh;background:#fff;border-radius:8px} #lb .leg{color:#fff;margin-top:8px;font-size:.9rem}
+footer{text-align:center;color:var(--mut);font-size:.76rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="/*LOGO*/" alt="G. Móveis">
+  <img class="prod" src="/*FOTO_PRODUTO*/" alt="">
+  <div><h1>/*TITULO*/ · quadro de combinações</h1><div class="sub">/*DESC*/ · ref. /*REF*/ · tecido × acabamento</div></div>
+  <a href="../mapa_produtos.html">← mapa dos produtos</a>
+</header>
+<div class="resumo" id="resumo"></div>
+<main id="corpo"></main>
+<footer id="rodape"></footer>
+<div id="lb" onclick="this.classList.remove('on')"><img id="lbimg" alt=""><div class="leg" id="lbleg"></div></div>
+<script>
+const Q=/*QUADRO*/{};
+let filtro="todas";
+function kpi(c,n,cls){return `<div class="kpi ${cls||""}"><b>${n}</b>${c}</div>`}
+function render(){
+  const tot=Q.total,ger=Q.celulas.filter(c=>c.arquivo).length,shop=Q.celulas.filter(c=>c.shopify).length,
+        soPasta=Q.celulas.filter(c=>c.arquivo&&!c.shopify).length,soLoja=Q.celulas.filter(c=>!c.arquivo&&c.shopify).length;
+  document.getElementById("resumo").innerHTML=kpi("combinações",tot)+kpi("geradas na pasta",`${ger}/${tot}`,ger===tot?"ok":"falta")
+    +kpi("na Shopify",`${shop}/${tot}`,shop===tot?"ok":"falta")+kpi("pasta, falta subir",soPasta,soPasta?"alerta":"")+kpi("na loja sem arquivo",soLoja,soLoja?"alerta":"")
+    +(Q.shopify_consultado?kpi("loja consultada",Q.shopify_consultado):"")
+    +`<div class="filtro">${["todas","só faltando","só prontas"].map(f=>`<button class="${f===filtro?"on":""}" onclick="filtro='${f}';render()">${f}</button>`).join("")}</div>`;
+  const cab=`<tr><th></th>${Q.acabamentos.map(a=>`<th><img src="${a.amostra}" alt="">${a.cod} ${a.nome}</th>`).join("")}</tr>`;
+  document.getElementById("corpo").innerHTML=Q.familias.map(f=>{
+    const linhas=f.tecidos.map(t=>{
+      const cels=Q.acabamentos.map(a=>Q.celulas.find(c=>c.tecido===t.cod&&c.acab===a.cod));
+      const prontas=cels.filter(c=>c.arquivo&&c.shopify).length;
+      const mostra=filtro==="todas"||(filtro==="só faltando"&&prontas<cels.length)||(filtro==="só prontas"&&prontas===cels.length);
+      return `<tr class="${mostra?"":"oculta"}"><td class="tec"><img src="${t.amostra}" alt="">${f.nome}${t.cod}</td>${cels.map(c=>{
+        const st=c.arquivo&&c.shopify?["ok","✓✓"]:c.arquivo?["alerta","✓ pasta"]:c.shopify?["alerta","✓ loja"]:["falta","✗"];
+        return `<td class="cel ${c.arquivo?"":"falta"}">${c.arquivo?`<img loading="lazy" src="${c.mini}" data-g="${c.original}" data-sku="${c.sku}" alt="${c.sku}"><span class="dt">${c.data||""}</span>`:`<div style="height:110px"></div>`}<div class="sku"><span>${c.sku}</span><span class="s ${st[0]}">${st[1]}</span></div></td>`}).join("")}</tr>`;
+    }).join("");
+    return `<h2 class="fam">Família ${f.nome} <small style="color:var(--mut);font-weight:400">${f.tecidos.length} tecidos</small></h2><table>${cab}${linhas}</table>`;
+  }).join("");
+  document.querySelectorAll("td.cel img").forEach(i=>i.onclick=()=>{document.getElementById("lbimg").src=i.dataset.g;document.getElementById("lbleg").textContent=i.dataset.sku;document.getElementById("lb").classList.add("on")});
+  document.getElementById("rodape").textContent=`Interno — não compartilhar · gerado em ${Q.gerado} · células em ${Q.pasta_celulas} · ✓✓ = na pasta e na Shopify`;
+}
+render();
+</script>
+</body>
+</html>

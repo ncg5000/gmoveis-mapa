@@ -1,7 +1,65 @@
 {
-  "site": "https://ncg5000.github.io/gmoveis-mapa/",
-  "fotos_principais": {
-    "2438": "2438-CADEIRA CAPRI ENC TODO ESTOF - GMóveis806 (SFI) Ind.jpg"
+ "site": "https://ncg5000.github.io/gmoveis-mapa/",
+ "fotos_principais": {
+  "2438": "2438-CADEIRA CAPRI ENC TODO ESTOF - GMóveis806 (SFI) Ind.jpg"
+ },
+ "reducao": {
+  "card_px": 600,
+  "grande_px": 1600,
+  "qualidade": 82
+ },
+ "quadro": {
+  "familias": {
+   "A": [
+    "071",
+    "072",
+    "073",
+    "074",
+    "004",
+    "010",
+    "001",
+    "002"
+   ],
+   "B": [
+    "052",
+    "053",
+    "054",
+    "055",
+    "060",
+    "061",
+    "087",
+    "044",
+    "049",
+    "085",
+    "086",
+    "070"
+   ],
+   "C": [
+    "064",
+    "031",
+    "065",
+    "033",
+    "038",
+    "090",
+    "095",
+    "075",
+    "080",
+    "028"
+   ]
   },
-  "reducao": {"card_px": 600, "grande_px": 1600, "qualidade": 82}
+  "acabamentos": {
+   "018": "Pinhão",
+   "032": "Capuccino",
+   "007": "Tabaco",
+   "099": "Amêndoa",
+   "017": "Branco",
+   "030": "Off White",
+   "029": "Preto"
+  },
+  "celula_px": 300,
+  "amostra_px": 90
+ },
+ "shopify": {
+  "2438": "gid://shopify/Product/10798514798902"
+ }
 }

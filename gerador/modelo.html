@@ -45,7 +45,9 @@ h2.grupo{font-size:1rem;font-weight:600;color:var(--azul);margin:18px 0 10px;pad
 .tams{font-size:.78rem;color:var(--tx);margin-top:4px;line-height:1.5}
 .tams b{font-weight:600}
 .trab{font-size:.74rem;color:var(--mut);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
-.trab .ok{color:var(--ok)} .trab .falta{color:var(--falta)}
+.trab .ok{color:var(--ok)} .trab .falta{color:var(--falta)} .trab .alerta{color:#b07a12}
+.btn{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--azul);text-decoration:none;border:1px solid var(--azul);border-radius:7px;padding:4px 9px;align-self:flex-start}
+.btn:hover{background:var(--azul);color:#fff}
 .preco{font-size:.8rem;margin-top:4px;color:#2b2b2b}
 .preco b{font-weight:600}
 .hide{display:none!important}
@@ -142,8 +144,12 @@ function card(d){
   const med=multi?"":`<div class="med">${fmtm(d.itens[0])}</div>`;
   const tams=multi?`<div class="tams">${d.itens.map(it=>`<b>${it.tam||it.nome}</b> <span class="ref">${it.ref}</span>${st.preco&&INTERNO&&it.preco?" · "+Object.entries(it.preco).map(([k,v])=>k+" "+fmtp(v)).join(" · "):""}`).join("<br>")}</div>`:"";
   const preco=(!multi&&st.preco&&INTERNO&&d.itens[0].preco)?`<div class="preco">${Object.entries(d.itens[0].preco).map(([k,v])=>`<b>${k}</b> ${fmtp(v)}`).join(" · ")}</div>`:"";
-  const trab=st.modo==="trabalho"?`<div class="trab"><span class="${d.fotos.length?"ok":"falta"}">foto ${d.fotos.length?"✓ "+d.fotos.length:"✗"}</span><span class="${d.refs.includes("2438")?"ok":""}">quadro ${d.refs.includes("2438")?"210/210":"—"}</span><span>${d.id.includes("|")?"":d.itens[0].nome}</span></div>`:"";
-  return `<div class="card">${foto}<div class="info"><div class="tit">${d.titulo}</div><div class="desc">${d.desc}</div>${refs}${med}<div class="cls">${cls(d).map(x=>`<span>${x}</span>`).join("")}</div>${tams}${preco}${trab}</div></div>`;
+  const q=d.quadro;
+  const qtxt=q?`quadro ${q.geradas}/${q.total}${INTERNO?` · loja ${q.shopify}/${q.total}`:""}`:"quadro —";
+  const qcls=q?(q.geradas===q.total&&(!INTERNO||q.shopify===q.total)?"ok":"alerta"):"";
+  const trab=st.modo==="trabalho"?`<div class="trab"><span class="${d.fotos.length?"ok":"falta"}">foto ${d.fotos.length?"✓ "+d.fotos.length:"✗"}</span><span class="${qcls}">${qtxt}</span><span>${d.id.includes("|")?"":d.itens[0].nome}</span></div>`:"";
+  const btn=(INTERNO&&q&&q.pagina)?`<a class="btn" href="${enc(q.pagina)}">Quadro de combinações ›</a>`:"";
+  return `<div class="card">${foto}<div class="info"><div class="tit">${d.titulo}</div><div class="desc">${d.desc}</div>${refs}${med}<div class="cls">${cls(d).map(x=>`<span>${x}</span>`).join("")}</div>${tams}${preco}${trab}${btn}</div></div>`;
 }
 let lbi=0,lbk=0;
 function lb(i,k){lbi=i;lbk=k;const d=DADOS[i];const f=d.fotos[k];$("#lbimg").src=enc(f.g);$("#lbleg").textContent=`${d.titulo} — ${d.desc}  (${k+1}/${d.fotos.length})`;$("#lb").classList.add("on")}

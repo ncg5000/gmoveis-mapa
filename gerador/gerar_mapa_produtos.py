@@ -258,14 +258,100 @@ def montar_cards(prods, fotos, overrides):
         c["fotos"].sort(key=lambda f: (f["slug"] != c["principal"], f["origem"]))
     return cards, pend, lista
 
+# ---------- quadros de combinações (internos) ----------
+AMOSTRAS_ACAB = {"018": "018-Pinhao.jpg", "032": "032-Capuccino.jpg", "007": "007-Tabaco.jpg", "099": "099-Amêndoa.jpg",
+                 "017": "017-Branco-cor.jpg", "030": "030-OffWhite.jpg", "029": "029-Preto.jpg"}
+
+def listar_celulas(pasta_fundo=None, listagem=None):
+    """-> {ref: {sku: (caminho relativo a Fundo_infinito, data 'dd/mm/aaaa')}}, {ttt: caminho amostra tecido}"""
+    cel, tec = defaultdict(dict), {}
+    def guarda(partes, mtime):
+        # partes = [Cat, 'Variações_Acabamentos', X, arquivo]
+        if len(partes) != 4 or partes[1] != "Variações_Acabamentos":
+            return
+        rel = "\\".join(partes)
+        if partes[2] == "tecidos":
+            m = re.fullmatch(r"(\d{3})\.(png|jpg)", partes[3], re.I)
+            if m:
+                tec[m.group(1)] = rel
+        elif re.fullmatch(r"\d{4}", partes[2]):
+            m = re.fullmatch(r"(\d{4}\d{3}-\d{3})\.(jpg|jpeg|png)", partes[3], re.I)
+            if m:
+                from datetime import datetime
+                cel[partes[2]][m.group(1)] = (rel, datetime.fromtimestamp(mtime / 1000).strftime("%d/%m/%Y") if mtime else "")
+    if listagem:
+        for e in json.load(open(listagem, encoding="utf-8"))["entries"]:
+            if e["type"] == "file":
+                guarda(e["name"].replace("/", "\\").split("\\"), e.get("mtimeMs"))
+        return cel, tec
+    for cat in sorted(set(PASTA_CAT.values())):
+        va = os.path.join(pasta_fundo, cat, "Variações_Acabamentos")
+        if not os.path.isdir(va):
+            continue
+        for sub in os.listdir(va):
+            d = os.path.join(va, sub)
+            if os.path.isdir(d):
+                for f in os.listdir(d):
+                    p = os.path.join(d, f)
+                    if os.path.isfile(p):
+                        guarda([cat, "Variações_Acabamentos", sub, f], os.path.getmtime(p) * 1000)
+    return cel, tec
+
+def gerar_quadros(cards, cel, tec, cfg, shopify, pasta_interna, meta):
+    """Escreve <pasta_interna>/mapa_produtos/quadro_<ref>.html; devolve {ref: {n, geradas, shopify}} e a lista de miniaturas."""
+    q = cfg["quadro"]; fam = q["familias"]; acabs = q["acabamentos"]
+    todos_tec = [t for f in fam.values() for t in f]
+    total = len(todos_tec) * len(acabs)
+    out_dir = os.path.join(pasta_interna, "mapa_produtos")
+    os.makedirs(out_dir, exist_ok=True)
+    tpl = open(os.path.join(AQUI, "modelo_quadro.html"), encoding="utf-8").read()
+    resumo, lista = {}, []
+    for a, arq in AMOSTRAS_ACAB.items():
+        lista.append({"origem": "Acabamentos\\" + arq, "destino": f"amostras\\a{a}.jpg", "px": q["amostra_px"]})
+    for t, rel in tec.items():
+        lista.append({"origem": "Fundo_infinito\\" + rel, "destino": f"amostras\\t{t}.jpg", "px": q["amostra_px"]})
+    for ref, skus in sorted(cel.items()):
+        card = next((c for c in cards.values() if ref in c["refs"]), None)
+        if not card:
+            continue
+        loja = set(shopify.get("produtos", {}).get(ref, {}).get("skus", []))
+        celulas = []
+        for t in todos_tec:
+            for a in acabs:
+                sku = f"{ref}{t}-{a}"
+                arq = skus.get(sku)
+                if arq:
+                    lista.append({"origem": "Fundo_infinito\\" + arq[0], "destino": f"{ref}\\{sku}.jpg", "px": q["celula_px"]})
+                celulas.append({"sku": sku, "tecido": t, "acab": a, "arquivo": bool(arq),
+                                "original": "../Fundo_infinito/" + arq[0].replace("\\", "/") if arq else "",
+                                "mini": f"celulas/{ref}/{sku}.jpg", "data": arq[1] if arq else "", "shopify": sku in loja})
+        dados = {"ref": ref, "total": total, "gerado": meta["gerado"], "pasta_celulas": f"Variações_Acabamentos\\{ref}\\",
+                 "shopify_consultado": shopify.get("consultado", "") if ref in shopify.get("produtos", {}) else "",
+                 "familias": [{"nome": n, "tecidos": [{"cod": t, "amostra": f"celulas/amostras/t{t}.jpg"} for t in ts]} for n, ts in fam.items()],
+                 "acabamentos": [{"cod": a, "nome": n, "amostra": f"celulas/amostras/a{a}.jpg"} for a, n in acabs.items()],
+                 "celulas": celulas}
+        foto = next((f for f in card["fotos"] if f["slug"] == card["principal"]), None)
+        html_q = (tpl.replace("/*QUADRO*/{}", json.dumps(dados, ensure_ascii=False, separators=(",", ":")))
+                  .replace("/*TITULO*/", card["titulo"]).replace("/*DESC*/", card["desc"]).replace("/*REF*/", ref)
+                  .replace("/*LOGO*/", "../" + LOGO_INTERNO)
+                  .replace("/*FOTO_PRODUTO*/", "../Fundo_infinito/" + foto["origem"].replace("\\", "/") if foto else ""))
+        open(os.path.join(out_dir, f"quadro_{ref}.html"), "w", encoding="utf-8").write(html_q)
+        resumo[ref] = {"total": total, "geradas": sum(1 for c in celulas if c["arquivo"]),
+                       "shopify": sum(1 for c in celulas if c["shopify"]), "pagina": f"mapa_produtos/quadro_{ref}.html"}
+    json.dump(lista, open(os.path.join(AQUI, "celulas_lista.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
+    return resumo
+
 # ---------- HTML ----------
 LOGO_INTERNO = "../Logo G Móveis/2026-Logo-600px-gmoveis-%231F4E57.png"  # relativo a 'público Catálogo\'
 
-def html(cards, meta, interno=False, prefixo_fotos="fotos/", fotos_originais=None):
+def html(cards, meta, interno=False, prefixo_fotos="fotos/", fotos_originais=None, quadros=None):
     dados = []
     for c in cards.values():
         d = {k: c[k] for k in ("id", "cat", "linha", "titulo", "desc", "refs", "classes", "principal")}
         d["catNome"] = CAT_NOME[c["cat"]]
+        qd = next((quadros[r] for r in c["refs"] if quadros and r in quadros), None)
+        if qd:
+            d["quadro"] = {k: v for k, v in qd.items() if interno or k != "pagina"}
         d["itens"] = [{k: v for k, v in it.items() if interno or k != "preco"} for it in c["itens"]]
         if fotos_originais:
             d["fotos"] = [{"src": fotos_originais(f["origem"]), "g": fotos_originais(f["origem"])} for f in c["fotos"]]
@@ -301,6 +387,17 @@ def main():
             "n_cards": len(cards)}
     os.makedirs(os.path.join(saida, "dados"), exist_ok=True)
     os.makedirs(os.path.join(saida, "notas"), exist_ok=True)
+    # quadros de combinações (só na saída interna)
+    quadros = None
+    if a.interno:
+        cel, tec = listar_celulas(a.fotos, a.listagem)
+        shop_path = os.path.join(saida, "dados", "shopify_midias.json")
+        shopify = json.load(open(shop_path, encoding="utf-8")) if os.path.exists(shop_path) else {}
+        quadros = gerar_quadros(cards, cel, tec, cfg, shopify, os.path.dirname(os.path.abspath(a.interno)), meta)
+        json.dump(quadros, open(os.path.join(saida, "dados", "quadros.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    else:
+        qp = os.path.join(saida, "dados", "quadros.json")
+        quadros = json.load(open(qp, encoding="utf-8")) if os.path.exists(qp) else None
     # público
     pub = []
     for c in cards.values():
@@ -310,7 +407,7 @@ def main():
     json.dump({"meta": meta, "cards": pub}, open(os.path.join(saida, "dados", "produtos.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     json.dump(lista, open(os.path.join(AQUI, "fotos_lista.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    open(os.path.join(saida, "index.html"), "w", encoding="utf-8").write(html(cards, meta))
+    open(os.path.join(saida, "index.html"), "w", encoding="utf-8").write(html(cards, meta, quadros=quadros))
     with open(os.path.join(saida, "notas", "nomes.csv"), "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, delimiter=";")
         w.writerow(["ref", "nome na tabela", "titulo", "descricao amigavel"])
@@ -326,7 +423,7 @@ def main():
     if a.interno:
         def rel(origem):  # arquivo interno fica em 'público Catálogo\'; fotos em Fundo_infinito\<cat>\
             return "Fundo_infinito/" + origem.replace("\\", "/")
-        open(a.interno, "w", encoding="utf-8").write(html(cards, meta, interno=True, fotos_originais=rel))
+        open(a.interno, "w", encoding="utf-8").write(html(cards, meta, interno=True, fotos_originais=rel, quadros=quadros))
     print(f"{len(cards)} cards · {sum(len(c['fotos']) for c in cards.values())} fotos · "
           f"sem foto {len(pend['sem_foto'])} · fotos sem card {len(pend['foto_sem_card'])}")
 
