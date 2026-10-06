@@ -1,4 +1,4 @@
-# PLANO — Mapa dos Produtos (06/10/2026)
+﻿# PLANO — Mapa dos Produtos (06/10/2026)
 
 ## Decisões
 - Finalidade: os dois em camadas — modo *trabalho* (status, pendências) e modo *catálogo* (sem status).
@@ -6,7 +6,7 @@
 - Ocultar/exibir = filtro de tela (categoria, linha, campos, modo). Não persiste.
 - Preço: botão, desligado por padrão — SÓ na saída interna (SharePoint). O site público nunca leva preço.
 - Local: repositório público `gmoveis-mapa` no GitHub (conta ncg5000) + GitHub Pages. Clone em `C:\Projetos\gmoveis-mapa`.
-- Fonte da lista: `+Tabela Líquida completa X gmoveis até 01-10-26.xlsx`, aba `Representante` (OOXML strict → converter com LibreOffice).
+- Fonte da lista: `Tabela_gmoveis.xlsx` (mestre; antes `+Tabela Líquida completa X gmoveis até 01-10-26.xlsx`, cópia em `arquivo\Tabela_gmoveis_2026-10-01.xlsx`), aba `Representante` (OOXML strict → converter com LibreOffice).
 - WhatsApp: link com prévia (og:tags). Depois, feed CSV do catálogo do WhatsApp Business gerado pelo mesmo gerador.
 
 ## Números (tabela 01-10-26 × Fundo_infinito)
