@@ -234,6 +234,8 @@ def montar_cards(prods, fotos, overrides):
                 continue
             cid = alvo.pop()
             s = slug(re.sub(r"\.[^.]+$", "", a))
+            if any(f["slug"] == s for f in cards[cid]["fotos"]):
+                continue   # mesma foto em .jpg e .png
             cards[cid]["fotos"].append({"origem": f"{pasta}\\{a}", "slug": s, "extra": extra, "nrefs": len(refs)})
             lista.append({"origem": f"{pasta}\\{a}", "slug": s})
             # nome da foto diz GIR/FIXA mas o produto não (ou vice-versa) → provável troca de ref
@@ -257,6 +259,8 @@ def montar_cards(prods, fotos, overrides):
     return cards, pend, lista
 
 # ---------- HTML ----------
+LOGO_INTERNO = "../Logo G Móveis/2026-Logo-600px-gmoveis-%231F4E57.png"  # relativo a 'público Catálogo\'
+
 def html(cards, meta, interno=False, prefixo_fotos="fotos/", fotos_originais=None):
     dados = []
     for c in cards.values():
@@ -271,8 +275,12 @@ def html(cards, meta, interno=False, prefixo_fotos="fotos/", fotos_originais=Non
     js = json.dumps(dados, ensure_ascii=False, separators=(",", ":"))
     mj = json.dumps(meta, ensure_ascii=False)
     tpl = open(os.path.join(AQUI, "modelo.html"), encoding="utf-8").read()
-    return (tpl.replace("/*DADOS*/[]", js).replace("/*META*/{}", mj)
-               .replace("<!--INTERNO-->", "1" if interno else "0"))
+    out = (tpl.replace("/*DADOS*/[]", js).replace("/*META*/{}", mj)
+              .replace("<!--INTERNO-->", "1" if interno else "0"))
+    if interno:
+        out = out.replace('src="assets/logo.png"', f'src="{LOGO_INTERNO}"').replace('href="assets/logo.png"', f'href="{LOGO_INTERNO}"')
+        out = out.replace("<title>Mapa dos Produtos · G. Móveis</title>", "<title>Mapa dos Produtos · G. Móveis — INTERNO</title>")
+    return out
 
 def main():
     ap = argparse.ArgumentParser()
