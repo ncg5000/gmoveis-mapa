@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa dos Produtos · G. Móveis</title>
+<meta property="og:title" content="Mapa dos Produtos · G. Móveis">
+<meta property="og:description" content="Cadeiras, banquetas, poltronas, mesas e aparadores — todos os modelos com foto, medidas e opções.">
+<meta property="og:image" content="assets/capa.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/logo.png">
+<style>
+:root{--azul:#1F4E57;--bege:#D1C2A3;--fundo:#f6f4ef;--card:#fff;--tx:#23302f;--mut:#6b7775;--linha:#e3ded2;--ok:#2e7d4f;--falta:#b4452c}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--tx);font-size:15px}
+header{background:var(--azul);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{height:38px;width:auto;background:#fff;border-radius:6px;padding:4px}
+header h1{font-size:1.15rem;font-weight:600;margin:0;flex:1}
+header .meta{font-size:.78rem;opacity:.8}
+.barra{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--linha);padding:8px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--azul);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;color:var(--azul);padding:6px 11px;cursor:pointer;font:inherit;font-size:.86rem}
+.seg button.on{background:var(--azul);color:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--linha);background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;font-size:.84rem;color:var(--tx)}
+.chip.on{background:var(--bege);border-color:var(--bege);color:#2b2b2b;font-weight:600}
+.barra input,.barra select{font:inherit;font-size:.86rem;padding:6px 9px;border:1px solid var(--linha);border-radius:8px;background:#fff}
+.barra label.t{font-size:.84rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.cont{font-size:.82rem;color:var(--mut);margin-left:auto}
+main{padding:14px 16px 40px}
+h2.grupo{font-size:1rem;font-weight:600;color:var(--azul);margin:18px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--bege)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--linha);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.foto{aspect-ratio:1/1;background:#fff;display:flex;align-items:center;justify-content:center;cursor:zoom-in;position:relative}
+.foto img{width:100%;height:100%;object-fit:contain;display:block}
+.foto.sem{background:repeating-linear-gradient(45deg,#f1ede4,#f1ede4 10px,#e9e4d8 10px,#e9e4d8 20px);color:var(--mut);font-size:.85rem;cursor:default}
+.foto .n{position:absolute;right:8px;bottom:8px;background:rgba(31,78,87,.85);color:#fff;font-size:.72rem;padding:2px 7px;border-radius:999px}
+.info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px}
+.tit{font-weight:600;font-size:.98rem;line-height:1.2}
+.desc{font-size:.84rem;color:var(--mut)}
+.ref{font-size:.76rem;color:var(--azul);font-family:ui-monospace,Consolas,monospace}
+.med{font-size:.8rem;color:var(--tx)}
+.cls{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.cls span{font-size:.7rem;border:1px solid var(--bege);border-radius:5px;padding:1px 6px;color:#5a4e36;background:#faf7f0}
+.tams{font-size:.78rem;color:var(--tx);margin-top:4px;line-height:1.5}
+.tams b{font-weight:600}
+.trab{font-size:.74rem;color:var(--mut);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+.trab .ok{color:var(--ok)} .trab .falta{color:var(--falta)}
+.preco{font-size:.8rem;margin-top:4px;color:#2b2b2b}
+.preco b{font-weight:600}
+.hide{display:none!important}
+#lb{position:fixed;inset:0;background:rgba(20,30,32,.92);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px}
+#lb.on{display:flex}
+#lb img{max-width:96vw;max-height:78vh;object-fit:contain;background:#fff;border-radius:8px}
+#lb .leg{color:#fff;margin-top:10px;font-size:.9rem;text-align:center}
+#lb .nav{display:flex;gap:10px;margin-top:10px}
+#lb button{background:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
+#pend{background:#fff7f1;border:1px solid #f0c9b8;border-radius:10px;padding:10px 14px;font-size:.84rem;margin-bottom:12px}
+footer{text-align:center;color:var(--mut);font-size:.76rem;padding:16px}
+@media (max-width:480px){.grade{grid-template-columns:repeat(2,1fr);gap:8px} main{padding:10px 8px 30px} .info{padding:8px} header h1{font-size:1rem}}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo.png" alt="G. Móveis">
+  <h1>Mapa dos Produtos</h1>
+  <span class="meta" id="meta"></span>
+</header>
+<div class="barra">
+  <div class="seg" id="modo"><button data-v="catalogo" class="on">Catálogo</button><button data-v="trabalho">Trabalho</button></div>
+  <div class="seg" id="agrupar"><button data-v="cat" class="on">Por categoria</button><button data-v="linha">Por linha</button></div>
+  <div class="chips" id="cats"></div>
+  <select id="linha"><option value="">Todas as linhas</option></select>
+  <input id="busca" type="search" placeholder="buscar ref ou nome">
+  <label class="t"><input type="checkbox" id="sofoto"> só com foto</label>
+  <label class="t hide" id="lpreco"><input type="checkbox" id="preco"> preço à vista</label>
+  <span class="cont" id="cont"></span>
+</div>
+<main>
+  <div id="pend" class="hide"></div>
+  <div id="corpo"></div>
+</main>
+<footer id="rodape"></footer>
+<div id="lb"><img id="lbimg" alt=""><div class="leg" id="lbleg"></div><div class="nav"><button id="lbprev">‹ anterior</button><button id="lbfechar">fechar</button><button id="lbnext">próxima ›</button></div></div>
+<script>
+const DADOS=/*DADOS*/[];
+const META=/*META*/{};
+const INTERNO=<!--INTERNO-->===1;
+const ORDEM_CAT=["CADEIRA","BANQUETA","POLTRONA","MESA","APARADOR"];
+const st={modo:"catalogo",agrupar:"cat",cats:new Set(),linha:"",busca:"",sofoto:false,preco:false};
+const $=s=>document.querySelector(s);
+const enc=s=>encodeURI(s);
+function fmtm(it){const a=[it.A,it.L,it.C].map(v=>v==null?"–":(v*100).toFixed(0));return `A ${a[0]} × L ${a[1]} × C ${a[2]} cm`}
+function fmtp(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function cls(c){return c.classes.map(x=>({A:"tecido A",B:"tecido B",C:"tecido C",mad:"tampo madeira",vid:"tampo vidro"}[x]||x))}
+function init(){
+  const cats=[...new Set(DADOS.map(d=>d.cat))].sort((a,b)=>ORDEM_CAT.indexOf(a)-ORDEM_CAT.indexOf(b));
+  $("#cats").innerHTML=cats.map(c=>`<span class="chip" data-c="${c}">${DADOS.find(d=>d.cat===c).catNome}</span>`).join("");
+  const linhas=[...new Set(DADOS.map(d=>d.linha))].sort();
+  $("#linha").innerHTML+=linhas.map(l=>`<option>${l}</option>`).join("");
+  $("#meta").textContent=`${META.n_cards} modelos · tabela ${META.validade||""}`;
+  $("#rodape").textContent=`G. Móveis Ltda · gerado em ${META.gerado} a partir de ${META.tabela}${INTERNO?" · versão interna (com preço) — não compartilhar":""}`;
+  if(INTERNO)$("#lpreco").classList.remove("hide");
+  document.querySelectorAll("#modo button").forEach(b=>b.onclick=()=>{seg("#modo",b);st.modo=b.dataset.v;render()});
+  document.querySelectorAll("#agrupar button").forEach(b=>b.onclick=()=>{seg("#agrupar",b);st.agrupar=b.dataset.v;render()});
+  $("#cats").onclick=e=>{const c=e.target.dataset.c;if(!c)return;e.target.classList.toggle("on");st.cats.has(c)?st.cats.delete(c):st.cats.add(c);render()};
+  $("#linha").onchange=e=>{st.linha=e.target.value;render()};
+  $("#busca").oninput=e=>{st.busca=e.target.value.trim().toLowerCase();render()};
+  $("#sofoto").onchange=e=>{st.sofoto=e.target.checked;render()};
+  $("#preco").onchange=e=>{st.preco=e.target.checked;render()};
+  $("#lbfechar").onclick=()=>$("#lb").classList.remove("on");
+  $("#lb").onclick=e=>{if(e.target.id==="lb")$("#lb").classList.remove("on")};
+  $("#lbprev").onclick=()=>lbgo(-1);$("#lbnext").onclick=()=>lbgo(1);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#lb").classList.remove("on");if(e.key==="ArrowLeft")lbgo(-1);if(e.key==="ArrowRight")lbgo(1)});
+  render();
+}
+function seg(id,b){document.querySelectorAll(id+" button").forEach(x=>x.classList.toggle("on",x===b))}
+function filtra(){
+  return DADOS.filter(d=>(!st.cats.size||st.cats.has(d.cat))&&(!st.linha||d.linha===st.linha)
+    &&(!st.sofoto||d.fotos.length)
+    &&(!st.busca||d.refs.some(r=>r.includes(st.busca))||(d.titulo+" "+d.desc+" "+d.itens.map(i=>i.nome).join(" ")).toLowerCase().includes(st.busca)));
+}
+function render(){
+  const lista=filtra();
+  const grupos=new Map();
+  for(const d of lista){const k=st.agrupar==="cat"?d.catNome:d.linha;if(!grupos.has(k))grupos.set(k,[]);grupos.get(k).push(d)}
+  const chaves=[...grupos.keys()];
+  if(st.agrupar==="cat")chaves.sort((a,b)=>ORDEM_CAT.indexOf(grupos.get(a)[0].cat)-ORDEM_CAT.indexOf(grupos.get(b)[0].cat));else chaves.sort();
+  $("#corpo").innerHTML=chaves.map(k=>`<h2 class="grupo">${k} <small style="color:var(--mut);font-weight:400">${grupos.get(k).length}</small></h2><div class="grade">${grupos.get(k).map(card).join("")}</div>`).join("");
+  $("#cont").textContent=`${lista.length} de ${DADOS.length} modelos`;
+  const semfoto=DADOS.filter(d=>!d.fotos.length);
+  $("#pend").classList.toggle("hide",st.modo!=="trabalho"||!semfoto.length);
+  $("#pend").innerHTML=`<b>Pendências:</b> ${semfoto.length} modelo(s) sem foto — `+semfoto.map(d=>`${d.titulo} (${d.refs.join(", ")})`).join("; ");
+  document.querySelectorAll(".foto[data-i]").forEach(f=>f.onclick=()=>lb(+f.dataset.i,0));
+}
+function card(d){
+  const i=DADOS.indexOf(d);
+  const foto=d.fotos.length?`<div class="foto" data-i="${i}"><img loading="lazy" src="${enc(d.fotos[0].src)}" alt="${d.titulo}">${d.fotos.length>1?`<span class="n">${d.fotos.length} fotos</span>`:""}</div>`
+    :`<div class="foto sem">sem foto</div>`;
+  const multi=d.itens.length>1;
+  const refs=multi?"":`<div class="ref">ref. ${d.refs[0]}</div>`;
+  const med=multi?"":`<div class="med">${fmtm(d.itens[0])}</div>`;
+  const tams=multi?`<div class="tams">${d.itens.map(it=>`<b>${it.tam||it.nome}</b> <span class="ref">${it.ref}</span>${st.preco&&INTERNO&&it.preco?" · "+Object.entries(it.preco).map(([k,v])=>k+" "+fmtp(v)).join(" · "):""}`).join("<br>")}</div>`:"";
+  const preco=(!multi&&st.preco&&INTERNO&&d.itens[0].preco)?`<div class="preco">${Object.entries(d.itens[0].preco).map(([k,v])=>`<b>${k}</b> ${fmtp(v)}`).join(" · ")}</div>`:"";
+  const trab=st.modo==="trabalho"?`<div class="trab"><span class="${d.fotos.length?"ok":"falta"}">foto ${d.fotos.length?"✓ "+d.fotos.length:"✗"}</span><span class="${d.refs.includes("2438")?"ok":""}">quadro ${d.refs.includes("2438")?"210/210":"—"}</span><span>${d.id.includes("|")?"":d.itens[0].nome}</span></div>`:"";
+  return `<div class="card">${foto}<div class="info"><div class="tit">${d.titulo}</div><div class="desc">${d.desc}</div>${refs}${med}<div class="cls">${cls(d).map(x=>`<span>${x}</span>`).join("")}</div>${tams}${preco}${trab}</div></div>`;
+}
+let lbi=0,lbk=0;
+function lb(i,k){lbi=i;lbk=k;const d=DADOS[i];const f=d.fotos[k];$("#lbimg").src=enc(f.g);$("#lbleg").textContent=`${d.titulo} — ${d.desc}  (${k+1}/${d.fotos.length})`;$("#lb").classList.add("on")}
+function lbgo(dir){if(!$("#lb").classList.contains("on"))return;const n=DADOS[lbi].fotos.length;lb(lbi,(lbk+dir+n)%n)}
+init();
+</script>
+</body>
+</html>
