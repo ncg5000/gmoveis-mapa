@@ -1,4 +1,4 @@
-﻿# gmoveis-mapa — Mapa dos Produtos G. Móveis
+# gmoveis-mapa — Mapa dos Produtos G. Móveis
 
 Site estático (GitHub Pages) com um card por modelo: foto, ref, medidas, classe e filtros de tela.
 Dois modos na mesma página: **trabalho** (status de foto, quadro de combinações, site) e **catálogo**.
@@ -11,7 +11,7 @@ Dois modos na mesma página: **trabalho** (status de foto, quadro de combinaçõ
 - `notas/` — plano e decisões.
 
 ## Fontes (SharePoint "Dados - Documentos", sincronizado pelo OneDrive)
-- Lista de produtos: `gm\TABELA - PRODUTOS\Tabela_gmoveis.xlsx` (aba `Representante`).
+- Lista de produtos: `gm\TABELA - PRODUTOS\+Tabela_gmoveis.xlsx` (aba `Representante`).
 - Fotos: `gm\Imagens\público Catálogo\Fundo_infinito\<Categoria>\<ref>-<DESCRIÇÃO>.jpg`.
 - Quadros de combinações: `...\Fundo_infinito\Cadeira\Variações_Acabamentos\<ref>\mapa\`.
 
